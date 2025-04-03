@@ -1,4 +1,4 @@
-package com.example.untitled;
+package com.dev.pharmacyd;
 
 import io.flutter.embedding.android.FlutterActivity;
 
