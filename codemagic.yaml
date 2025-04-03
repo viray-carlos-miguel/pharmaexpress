@@ -1,4 +1,7 @@
 workflows:
-  sample-workflow:
+  android-workflow:
+    name: Android Workflow
+    # ....
     environment:
-      flutter: stable
+      android_signing:
+        - keystore_reference
