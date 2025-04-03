@@ -30,47 +30,47 @@ android {
     }
 
     // Load keystore properties for signing
+    // Load keystore properties
     val keystorePropertiesFile = rootProject.file("key.properties")
     val keystoreProperties = Properties()
 
     if (keystorePropertiesFile.exists()) {
         keystoreProperties.load(FileInputStream(keystorePropertiesFile))
     } else {
-        throw GradleException("Key properties file not found.")
+        throw GradleException("🚨 Key properties file not found at: ${keystorePropertiesFile.absolutePath}")
     }
 
-    // Debugging: Log the keystore file path
+// Debugging: Log the keystore file path
     val keystoreFilePath = keystoreProperties["storeFile"]?.toString()
+    println("🔹 Keystore path from key.properties: $keystoreFilePath")
+
     if (keystoreFilePath.isNullOrEmpty()) {
-        throw GradleException("Keystore file path is empty or null!")
+        throw GradleException("🚨 Keystore file path is empty or null! Check key.properties.")
     }
 
-    // Resolve relative path to absolute path (keystore path should now be correct)
     val keystoreFile = file(keystoreFilePath)
+
+    println("🔹 Resolved keystore file path: ${keystoreFile.absolutePath}")
+
     if (!keystoreFile.exists()) {
-        throw GradleException("Keystore file does not exist at path: $keystoreFilePath")
+        throw GradleException("🚨 Keystore file does not exist at: ${keystoreFile.absolutePath}")
     }
 
-    println("Using keystore file path: $keystoreFilePath")
+    println("✅ Using keystore file at: ${keystoreFile.absolutePath}")
 
     signingConfigs {
         create("release") {
             storeFile = keystoreFile
-            storePassword = keystoreProperties["storePassword"]?.toString() ?: throw GradleException("Keystore password not specified")
-            keyAlias = keystoreProperties["keyAlias"]?.toString() ?: throw GradleException("Key alias not specified")
-            keyPassword = keystoreProperties["keyPassword"]?.toString() ?: throw GradleException("Key password not specified")
-        }
-    }
-
-    buildTypes {
-        release {
-            signingConfig = signingConfigs.getByName("release")
-            isMinifyEnabled = false
-            isShrinkResources = false
+            storePassword = keystoreProperties["storePassword"]?.toString()
+                ?: throw GradleException("🚨 Keystore password not specified")
+            keyAlias = keystoreProperties["keyAlias"]?.toString()
+                ?: throw GradleException("🚨 Key alias not specified")
+            keyPassword = keystoreProperties["keyPassword"]?.toString()
+                ?: throw GradleException("🚨 Key password not specified")
         }
     }
 }
 
-flutter {
+    flutter {
     source = "../.."
 }
