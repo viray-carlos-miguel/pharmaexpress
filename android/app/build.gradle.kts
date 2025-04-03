@@ -20,25 +20,51 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        // Specify your own unique Application ID.
         applicationId = "com.example.untitled"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        release {
+            if (System.getenv()["CI"]) { // CI=true is exported by services like Codemagic
+                storeFile file(System.getenv()["keyproperties64"]) // Keystore file path
+                storePassword System.getenv()["keystorepassword"]
+                keyAlias System.getenv()["alias"]
+                keyPassword System.getenv()["keypassword"]
+            } else {
+                // Read the keystore properties file for local development
+                def keystoreProperties = new Properties()
+                def keystorePropertiesFile = rootProject.file("keystore.properties")
+                if (keystorePropertiesFile.exists()) {
+                    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+                }
+
+                keyAlias keystoreProperties['alias']
+                keyPassword keystoreProperties['keypassword']
+                storeFile keystoreProperties['keyproperties'] ? file(keystoreProperties['keyproperties']) : null
+                storePassword keystoreProperties['keystorepassword']
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // Enable minification if needed for release
+            minifyEnabled false  // Change to true if you want to use ProGuard/R8
+            shrinkResources false  // Set to true if you need to shrink resources
+
+            signingConfig signingConfigs.release
+
+                    // Enable Proguard rules if using minification
+                    proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
 
 flutter {
-    source = "../.."
+    source = "../.." // Ensure this points to the correct location of your Flutter SDK
 }
