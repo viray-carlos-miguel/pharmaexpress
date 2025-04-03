@@ -1,14 +1,35 @@
+import java.io.File
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
-    id("dev.flutter.flutter-gradle-plugin")
+    id("dev.flutter.flutter-gradle-plugin") // Flutter plugin must be last
+}
+
+// ✅ Define Flutter SDK versions explicitly
+ext {
+    set("flutter.compileSdkVersion", 35) // Change as needed
+    set("flutter.minSdkVersion", 21) // Minimum SDK version
+    set("flutter.targetSdkVersion", 33) // Target SDK version
+    set("flutter.ndkVersion", "27.0.12077973") // NDK version for compatibility
 }
 
 android {
-    namespace = "com.example.untitled"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // ✅ Specify namespace (MUST be set to avoid build errors)
+    namespace = "com.example.untitled" // Change to your package name
+
+    compileSdk = project.extra["flutter.compileSdkVersion"] as Int
+    ndkVersion = project.extra["flutter.ndkVersion"] as String
+
+    defaultConfig {
+        applicationId = "com.example.untitled"
+        minSdk = project.extra["flutter.minSdkVersion"] as Int
+        targetSdk = project.extra["flutter.targetSdkVersion"] as Int
+        versionCode = 1
+        versionName = "1.0"
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -19,52 +40,41 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
-    defaultConfig {
-        // Specify your own unique Application ID.
-        applicationId = "com.example.untitled"
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
-    }
-
     signingConfigs {
-        release {
-            if (System.getenv()["CI"]) { // CI=true is exported by services like Codemagic
-                storeFile file(System.getenv()["keyproperties64"]) // Keystore file path
-                storePassword System.getenv()["keystorepassword"]
-                keyAlias System.getenv()["alias"]
-                keyPassword System.getenv()["keypassword"]
-            } else {
-                // Read the keystore properties file for local development
-                def keystoreProperties = new Properties()
-                def keystorePropertiesFile = rootProject.file("keystore.properties")
-                if (keystorePropertiesFile.exists()) {
-                    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-                }
+        create("release") {
+            val keystorePropertiesFile = rootProject.file("key.properties")
+            val keystoreProperties = Properties()
 
-                keyAlias keystoreProperties['alias']
-                keyPassword keystoreProperties['keypassword']
-                storeFile keystoreProperties['keyproperties'] ? file(keystoreProperties['keyproperties']) : null
-                storePassword keystoreProperties['keystorepassword']
+            if (keystorePropertiesFile.exists()) {
+                keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+            } else {
+                throw GradleException("Missing keystore.properties file!")
+            }
+
+            storeFile = keystoreProperties.getProperty("storeFile")?.let { file(it) }
+            storePassword = keystoreProperties.getProperty("storePassword")
+            keyAlias = keystoreProperties.getProperty("keyAlias")
+            keyPassword = keystoreProperties.getProperty("keyPassword")
+
+            if (storeFile == null || storePassword == null || keyAlias == null || keyPassword == null) {
+                throw GradleException("Signing config values are missing!")
             }
         }
     }
 
     buildTypes {
-        release {
-            // Enable minification if needed for release
-            minifyEnabled false  // Change to true if you want to use ProGuard/R8
-            shrinkResources false  // Set to true if you need to shrink resources
-
-            signingConfig signingConfigs.release
-
-                    // Enable Proguard rules if using minification
-                    proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = false
+            isShrinkResources = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                file("proguard-rules.pro")
+            )
         }
     }
 }
 
 flutter {
-    source = "../.." // Ensure this points to the correct location of your Flutter SDK
+    source = "../.." // Ensure this points to the correct Flutter SDK location
 }
