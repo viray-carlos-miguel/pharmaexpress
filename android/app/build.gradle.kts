@@ -56,9 +56,7 @@ android {
             keyAlias = keystoreProperties.getProperty("keyAlias")
             keyPassword = keystoreProperties.getProperty("keyPassword")
 
-            if (storeFile == null || storePassword == null || keyAlias == null || keyPassword == null) {
-                throw GradleException("Signing config values are missing!")
-            }
+
         }
     }
 
