@@ -21,21 +21,11 @@ workflows:
       # Decode keystore from Base64
       - name: Decode keystore
         script: |
-          echo "$CM_BASE64_KEYSTORE" | base64 --decode > android/app/codemagic.keystore
-
-      # Set up signing configuration using the new variables
-      - name: Set up signing configuration
-        script: |
-          echo "storeFile=$CM_KEYSTORE_PATH" >> android/key.properties
-          echo "storePassword=$CM_KEYSTORE_PASSWORD" >> android/key.properties
-          echo "keyAlias=$CM_KEY_ALIAS" >> android/key.properties
-          echo "keyPassword=$CM_KEY_PASSWORD" >> android/key.properties
+          echo "$CM_BASE64" | base64 --decode > android/app/pharmacy.keystore
 
       # Build AAB in release mode (ensure release flag is set)
       - name: Build AAB
         script: flutter build appbundle --release
-
-
 
     artifacts:
       - "build/app/outputs/bundle/release/app-release.aab"

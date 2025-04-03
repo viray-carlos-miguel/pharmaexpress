@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.developer.milkteashop"
+    namespace = "com.dev.pharmacy"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
@@ -22,57 +22,37 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.developer.milkteashop"
+        applicationId = "com.dev.pharmacy"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
-    // Load keystore properties
+    // Load keystore properties for signing
     val keystorePropertiesFile = rootProject.file("key.properties")
     val keystoreProperties = Properties()
 
     if (keystorePropertiesFile.exists()) {
         keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-        println("🔹 Key properties loaded successfully from: ${keystorePropertiesFile.absolutePath}")
     } else {
-        throw GradleException("🚨 Key properties file not found at: ${keystorePropertiesFile.absolutePath}")
-    }
-
-    val keystoreFilePath = keystoreProperties["storeFile"]?.toString()
-    println("🔹 Keystore path from key.properties: $keystoreFilePath")
-
-    if (keystoreFilePath.isNullOrEmpty()) {
-        throw GradleException("🚨 Keystore file path is empty or null! Check key.properties.")
-    }
-
-    val keystoreFile = file(keystoreFilePath)
-
-    if (!keystoreFile.exists()) {
-        throw GradleException("🚨 Keystore file does not exist at: ${keystoreFile.absolutePath}")
-    } else {
-        println("🔹 Keystore file found at: ${keystoreFile.absolutePath}")
+        throw GradleException("Key properties file not found.")
     }
 
     signingConfigs {
         create("release") {
-            storeFile = keystoreFile
-            storePassword = keystoreProperties["storePassword"]?.toString()
-                ?: throw GradleException("🚨 Keystore password not specified")
-            keyAlias = keystoreProperties["keyAlias"]?.toString()
-                ?: throw GradleException("🚨 Key alias not specified")
-            keyPassword = keystoreProperties["keyPassword"]?.toString()
-                ?: throw GradleException("🚨 Key password not specified")
+            storeFile = file(keystoreProperties["storeFile"]?.toString() ?: throw GradleException("Keystore file not specified"))
+            storePassword = keystoreProperties["storePassword"]?.toString() ?: throw GradleException("Keystore password not specified")
+            keyAlias = keystoreProperties["keyAlias"]?.toString() ?: throw GradleException("Key alias not specified")
+            keyPassword = keystoreProperties["keyPassword"]?.toString() ?: throw GradleException("Key password not specified")
         }
     }
 
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("release")
-        }
-        debug {
-            // Optionally, you can specify a different signing config for debug
+            isMinifyEnabled = false
+            isShrinkResources = false
         }
     }
 }
