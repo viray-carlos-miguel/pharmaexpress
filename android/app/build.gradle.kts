@@ -56,7 +56,7 @@ android {
     signingConfigs {
         create("release") {
             storeFile = keystoreFile
-            storePassword = keystoreProperties["storePassword"]?.toString() ?: throw GradleException("Keystore password not  specified")
+            storePassword = keystoreProperties["storePassword"]?.toString() ?: throw GradleException("Keystore password not specified")
             keyAlias = keystoreProperties["keyAlias"]?.toString() ?: throw GradleException("Key alias not specified")
             keyPassword = keystoreProperties["keyPassword"]?.toString() ?: throw GradleException("Key password not specified")
         }
