@@ -51,7 +51,7 @@ android {
                 throw GradleException("Missing keystore.properties file!")
             }
 
-            storeFile = keystoreProperties.getProperty("storeFile")?.let { file(it) }
+            storeFile = file(keystoreProperties["storeFile"]?.toString() ?: throw GradleException("Keystore file not specified"))
             storePassword = keystoreProperties.getProperty("storePassword")
             keyAlias = keystoreProperties.getProperty("keyAlias")
             keyPassword = keystoreProperties.getProperty("keyPassword")
