@@ -35,6 +35,7 @@ android {
 
     if (keystorePropertiesFile.exists()) {
         keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+        println("🔹 Key properties loaded successfully from: ${keystorePropertiesFile.absolutePath}")
     } else {
         throw GradleException("🚨 Key properties file not found at: ${keystorePropertiesFile.absolutePath}")
     }
@@ -50,6 +51,8 @@ android {
 
     if (!keystoreFile.exists()) {
         throw GradleException("🚨 Keystore file does not exist at: ${keystoreFile.absolutePath}")
+    } else {
+        println("🔹 Keystore file found at: ${keystoreFile.absolutePath}")
     }
 
     signingConfigs {
