@@ -54,7 +54,7 @@ class WelcomePage extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 31),
+            const SizedBox(height: 30),
 
             // Get Started Button
             CupertinoButton.filled(
