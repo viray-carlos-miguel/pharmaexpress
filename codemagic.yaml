@@ -21,7 +21,7 @@ workflows:
       # Decode keystore from Base64
       - name: Decode keystore
         script: |
-          echo "$CM_BASE64_KEYSTORE" | base64 --decode > android/app/codemagic.keystore
+          echo "$CM_BASE64_KEYSTORE" | base64 --decode > app/codemagic.keystore
 
       # Set up signing configuration using the new variables
       - name: Set up signing configuration
