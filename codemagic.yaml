@@ -1,1 +1,4 @@
 workflows:
+  sample-workflow:
+    environment:
+      flutter: stable
