@@ -29,7 +29,6 @@ android {
         versionName = flutter.versionName
     }
 
-    // Load keystore properties for signing
     // Load keystore properties
     val keystorePropertiesFile = rootProject.file("key.properties")
     val keystoreProperties = Properties()
@@ -40,7 +39,6 @@ android {
         throw GradleException("🚨 Key properties file not found at: ${keystorePropertiesFile.absolutePath}")
     }
 
-// Debugging: Log the keystore file path
     val keystoreFilePath = keystoreProperties["storeFile"]?.toString()
     println("🔹 Keystore path from key.properties: $keystoreFilePath")
 
@@ -50,13 +48,9 @@ android {
 
     val keystoreFile = file(keystoreFilePath)
 
-    println("🔹 Resolved keystore file path: ${keystoreFile.absolutePath}")
-
     if (!keystoreFile.exists()) {
         throw GradleException("🚨 Keystore file does not exist at: ${keystoreFile.absolutePath}")
     }
-
-    println("✅ Using keystore file at: ${keystoreFile.absolutePath}")
 
     signingConfigs {
         create("release") {
@@ -69,8 +63,17 @@ android {
                 ?: throw GradleException("🚨 Key password not specified")
         }
     }
+
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName("release")
+        }
+        debug {
+            // Optionally, you can specify a different signing config for debug
+        }
+    }
 }
 
-    flutter {
+flutter {
     source = "../.."
 }
