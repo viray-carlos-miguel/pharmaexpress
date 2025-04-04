@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.dev.pharmacy"
+    namespace = "com.dev.pharmacyExprs"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
@@ -22,7 +22,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.dev.pharmacy"
+        applicationId = "com.dev.pharmacyExprs"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
