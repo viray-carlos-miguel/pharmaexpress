@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 void main() {
   runApp(
     CupertinoApp(
+      debugShowCheckedModeBanner: false,
       localizationsDelegates: const [
         GlobalCupertinoLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -35,35 +36,28 @@ class _AddProductPageState extends State<AddProductPage> {
   File? _imageFile;
 
   String? _validateName(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter a name';
-    }
+    if (value == null || value.isEmpty) return 'Please enter a name';
     return null;
   }
 
   String? _validatePrice(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter a price';
-    }
-    if (double.tryParse(value) == null) {
-      return 'Please enter a valid price';
-    }
+    if (value == null || value.isEmpty) return 'Please enter a price';
+    if (double.tryParse(value) == null) return 'Please enter a valid price';
     return null;
   }
 
   String? _validateQuantity(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter a quantity';
-    }
-    if (int.tryParse(value) == null) {
-      return 'Please enter a valid quantity';
-    }
+    if (value == null || value.isEmpty) return 'Please enter a quantity';
+    if (int.tryParse(value) == null) return 'Please enter a valid quantity';
     return null;
   }
 
   Future<String> _uploadImage(File image) async {
     try {
-      var request = http.MultipartRequest('POST', Uri.parse('http://192.168.1.251/api/upload_image.php'));
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('http://192.168.1.251/api/upload_image.php'),
+      );
       var multipartFile = await http.MultipartFile.fromBytes(
         'image',
         await image.readAsBytes(),
@@ -71,8 +65,8 @@ class _AddProductPageState extends State<AddProductPage> {
       );
 
       request.files.add(multipartFile);
-
       var response = await request.send();
+
       if (response.statusCode == 200) {
         var responseData = await response.stream.bytesToString();
         var responseJson = jsonDecode(responseData);
@@ -98,82 +92,40 @@ class _AddProductPageState extends State<AddProductPage> {
         }),
       );
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        var responseJson = jsonDecode(response.body);
-        if (responseJson['success']) {
-          showCupertinoDialog(
-            context: context,
-            builder: (context) {
-              return CupertinoAlertDialog(
-                title: const Text('Success'),
-                content: const Text('Product added successfully'),
-                actions: [
-                  CupertinoDialogAction(
-                    child: const Text('OK'),
-                    onPressed: () {
-                      Navigator.pop(context); // Close the dialog
-                      Navigator.pop(context); // Close the AddProductPage
-                    },
-                  ),
-                ],
-              );
-            },
-          );
-        } else {
-          showCupertinoDialog(
-            context: context,
-            builder: (context) {
-              return CupertinoAlertDialog(
-                title: const Text('Error'),
-                content: Text('Failed to add product: ${responseJson['message']}'),
-                actions: [
-                  CupertinoDialogAction(
-                    child: const Text('OK'),
-                    onPressed: () {
-                      Navigator.pop(context); // Close the dialog
-                    },
-                  ),
-                ],
-              );
-            },
-          );
-        }
-      } else {
-        showCupertinoDialog(
-          context: context,
-          builder: (context) {
-            return CupertinoAlertDialog(
-              title: const Text('Error'),
-              content: Text('An error occurred while adding the product. Status code: ${response.statusCode}'),
-              actions: [
-                CupertinoDialogAction(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    Navigator.pop(context); // Close the dialog
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      }
+      final responseJson = jsonDecode(response.body);
+      final isSuccess = responseJson['success'];
+
+      showCupertinoDialog(
+        context: context,
+        builder: (_) => CupertinoAlertDialog(
+          title: Text(isSuccess ? 'Success' : 'Error'),
+          content: Text(isSuccess
+              ? 'Product added successfully'
+              : 'Failed to add product: ${responseJson['message']}'),
+          actions: [
+            CupertinoDialogAction(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.pop(context);
+                if (isSuccess) Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      );
     } catch (e) {
       showCupertinoDialog(
         context: context,
-        builder: (context) {
-          return CupertinoAlertDialog(
-            title: const Text('Error'),
-            content: Text('An error occurred while adding the product: $e'),
-            actions: [
-              CupertinoDialogAction(
-                child: const Text('OK'),
-                onPressed: () {
-                  Navigator.pop(context); // Close the dialog
-                },
-              ),
-            ],
-          );
-        },
+        builder: (_) => CupertinoAlertDialog(
+          title: const Text('Error'),
+          content: Text('An error occurred while adding the product: $e'),
+          actions: [
+            CupertinoDialogAction(
+              child: const Text('OK'),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
       );
     }
   }
@@ -190,20 +142,16 @@ class _AddProductPageState extends State<AddProductPage> {
     } catch (e) {
       showCupertinoDialog(
         context: context,
-        builder: (context) {
-          return CupertinoAlertDialog(
-            title: const Text('Error'),
-            content: Text('Error selecting image: $e'),
-            actions: [
-              CupertinoDialogAction(
-                child: const Text('OK'),
-                onPressed: () {
-                  Navigator.pop(context); // Close the dialog
-                },
-              ),
-            ],
-          );
-        },
+        builder: (_) => CupertinoAlertDialog(
+          title: const Text('Error'),
+          content: Text('Error selecting image: $e'),
+          actions: [
+            CupertinoDialogAction(
+              child: const Text('OK'),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
       );
     }
   }
@@ -217,88 +165,100 @@ class _AddProductPageState extends State<AddProductPage> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CupertinoFormRow(
-                error: Text(_validateName(_nameController.text) ?? ''),
-                child: CupertinoTextField(
+      child: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                CupertinoTextField(
                   controller: _nameController,
                   placeholder: 'Product Name',
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  style: TextStyle(fontSize: 16),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
                     color: CupertinoColors.systemGrey5,
-                    border: Border.all(color: CupertinoColors.systemGrey2),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-              ),
-              CupertinoFormRow(
-                error: Text(_validatePrice(_priceController.text) ?? ''),
-                child: CupertinoTextField(
+                const SizedBox(height: 16),
+                CupertinoTextField(
                   controller: _priceController,
                   placeholder: 'Price (\$)',
                   keyboardType: TextInputType.number,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  style: TextStyle(fontSize: 16),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
                     color: CupertinoColors.systemGrey5,
-                    border: Border.all(color: CupertinoColors.systemGrey2),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-              ),
-              CupertinoFormRow(
-                error: Text(_validateQuantity(_quantityController.text) ?? ''),
-                child: CupertinoTextField(
+                const SizedBox(height: 16),
+                CupertinoTextField(
                   controller: _quantityController,
                   placeholder: 'Quantity Available',
                   keyboardType: TextInputType.number,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  style: TextStyle(fontSize: 16),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
                     color: CupertinoColors.systemGrey5,
-                    border: Border.all(color: CupertinoColors.systemGrey2),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              CupertinoButton(
-                onPressed: _selectImage,
-                child: const Text("Select Image"),
-                color: CupertinoColors.activeBlue,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              if (_imageFile != null)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.file(
-                      _imageFile!,
-                      width: 120,
-                      height: 120,
-                      fit: BoxFit.cover,
+                const SizedBox(height: 20),
+                CupertinoButton(
+                  onPressed: _selectImage,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  color: CupertinoColors.activeBlue,
+                  borderRadius: BorderRadius.circular(10),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(CupertinoIcons.cloud_upload, color: CupertinoColors.white),
+                      const SizedBox(width: 8),
+                      Text(
+                        _imageFile == null ? "Upload Image Here" : "Change Image",
+                        style: const TextStyle(color: CupertinoColors.white),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                if (_imageFile != null)
+                  Center(
+                    child: Container(
+                      width: 150,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: CupertinoColors.systemGrey3),
+                        boxShadow: [
+                          BoxShadow(
+                            color: CupertinoColors.systemGrey.withOpacity(0.2),
+                            blurRadius: 6,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Image.file(
+                          _imageFile!,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
                   ),
+                const SizedBox(height: 30),
+                CupertinoButton.filled(
+                  borderRadius: BorderRadius.circular(8),
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _addProduct();
+                    }
+                  },
+                  child: const Text("Add Product"),
                 ),
-              const SizedBox(height: 20),
-              CupertinoButton.filled(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _addProduct();
-                  }
-                },
-                child: const Text("Add Product"),
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

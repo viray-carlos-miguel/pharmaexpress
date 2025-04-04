@@ -211,7 +211,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: Image.network(
-                widget.medicine['image_url'] ?? "http://192.168.1.251/api/uploads/default_image.jpg",
+                widget.medicine['image_url'] ?? "https://pharmaexpressdelivery.shop/api/uploads/default_image.jpg",
                 height: 200,
                 width: double.infinity,
                 fit: BoxFit.cover,

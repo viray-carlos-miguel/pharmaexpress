@@ -10,7 +10,7 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
-  String server = "http://192.168.1.251/api/";
+  String server = "https://pharmaexpressdelivery.shop/api/";
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
@@ -108,51 +108,65 @@ class _SignupPageState extends State<SignupPage> {
       ),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Title
-            const Text(
-              "Create an Account",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // LOGO
+                SizedBox(
+                  height: 100,
+                  child: Image.asset(
+                    "assets/pharma_logo.png", // Replace with your asset path
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                const SizedBox(height: 20),
 
-            // Username Field
-            CupertinoTextField(
-              controller: usernameController,
-              placeholder: "Username",
-              padding: const EdgeInsets.all(12),
-            ),
-            const SizedBox(height: 10),
+                // Title
+                const Text(
+                  "Create an Account",
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 20),
 
-            // Password Field
-            CupertinoTextField(
-              controller: passwordController,
-              placeholder: "Password",
-              padding: const EdgeInsets.all(12),
-              obscureText: true,
-            ),
-            const SizedBox(height: 20),
+                // Username Field
+                CupertinoTextField(
+                  controller: usernameController,
+                  placeholder: "Username",
+                  padding: const EdgeInsets.all(12),
+                ),
+                const SizedBox(height: 10),
 
-            // Signup Button
-            CupertinoButton.filled(
-              child: isLoading
-                  ? const CupertinoActivityIndicator()
-                  : const Text("Sign Up"),
-              onPressed: signupUser,
-            ),
+                // Password Field
+                CupertinoTextField(
+                  controller: passwordController,
+                  placeholder: "Password",
+                  padding: const EdgeInsets.all(12),
+                  obscureText: true,
+                ),
+                const SizedBox(height: 20),
 
-            const SizedBox(height: 10),
+                // Signup Button
+                CupertinoButton.filled(
+                  child: isLoading
+                      ? const CupertinoActivityIndicator()
+                      : const Text("Sign Up"),
+                  onPressed: signupUser,
+                ),
 
-            // Go back to login
-            CupertinoButton(
-              child: const Text("Already have an account? Login"),
-              onPressed: () {
-                Navigator.pop(context); // Go back to login page
-              },
+                const SizedBox(height: 10),
+
+                // Go back to login
+                CupertinoButton(
+                  child: const Text("Already have an account? Login"),
+                  onPressed: () {
+                    Navigator.pop(context); // Go back to login page
+                  },
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
