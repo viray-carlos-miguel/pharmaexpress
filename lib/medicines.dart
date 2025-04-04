@@ -29,8 +29,8 @@ class MedicinesPage extends StatefulWidget {
 }
 
 class _MedicinesPageState extends State<MedicinesPage> {
-  final String _server = "http://192.168.1.251/api/";
-  final String _defaultImage = "http://192.168.1.251/api/uploads/default_image.jpg";
+  final String _server = "https://pharmaexpressdelivery.shop/api/";
+  final String _defaultImage = "https://pharmaexpressdelivery.shop/api/uploads/default_image.jpg";
 
   bool _isLoading = true;
   bool _hasError = false;

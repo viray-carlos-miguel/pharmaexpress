@@ -56,7 +56,7 @@ class _AddProductPageState extends State<AddProductPage> {
     try {
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('http://192.168.1.251/api/upload_image.php'),
+        Uri.parse('https://pharmaexpressdelivery.shop/api/upload_image.php'),
       );
       var multipartFile = await http.MultipartFile.fromBytes(
         'image',
@@ -82,7 +82,7 @@ class _AddProductPageState extends State<AddProductPage> {
   Future<void> _addProduct() async {
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.1.251/api/add_medicines.php'),
+        Uri.parse('https://pharmaexpressdelivery.shop/api/add_medicines.php'),
         headers: {'Content-Type': 'application/json; charset=UTF-8'},
         body: jsonEncode({
           'name': _nameController.text,

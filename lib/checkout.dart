@@ -56,7 +56,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   Future<void> _submitPayment() async {
-    final String paymentApiUrl = 'http://192.168.1.251/api/card_info.php';
+    final String paymentApiUrl = 'https://pharmaexpressdelivery.shop/api/card_info.php';
 
 
     final response = await http.post(
@@ -84,7 +84,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   Future<void> _saveOrderHistory() async {
-    final String orderApiUrl = 'http://192.168.1.251/api/orders.php';
+    final String orderApiUrl = 'https://pharmaexpressdelivery.shop/api/orders.php';
 
     await http.post(
       Uri.parse(orderApiUrl),
