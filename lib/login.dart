@@ -17,7 +17,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String server = "https://pharmaexpressdelivery.shop//api/";
+  String server = "https://pharmaexpressdelivery.shop/api/";
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool isLoading = false;
